@@ -6,7 +6,7 @@ from operator import itemgetter
 
 
 client1 = pymongo.MongoClient("mongodb://root:B99m&l8LY^%hg3vefpO9p)4kyF!tsvPD@dds-bp19d0ea34ec38941316-pub.mongodb.rds.aliyuncs.com:3717/")
-client2 = pymongo.MongoClient(host='192.168.11.4', port=27017)
+client2 = pymongo.MongoClient(host='172.31.11.218', port=27017)
 
 db1 = client1.SpiderTasks
 db2 = client2.SpiderTasks
@@ -69,6 +69,7 @@ def filter_and_insert(after_collection, results, spider_id, order_id, unique_id)
     :param order_id:            订单id
     :param unique_id:           去重依据
     """
+    current_time = int(time.time())
     if not unique_id:
         # new_one = {
         #     "order_id": order_id,
@@ -96,7 +97,18 @@ def filter_and_insert(after_collection, results, spider_id, order_id, unique_id)
         obj = after_collection.find_one({"order_id": order_id})
         if obj:
             try:
+                import operator
                 o_results = obj.get("results")
+                ascend_o_results = sorted(o_results, key=operator.itemgetter("create_time"))
+
+                # 删除三个月前发布的数据
+                create_time_list = [o.get('create_time') for o in ascend_o_results]
+
+                for as_i in create_time_list:
+                    if as_i > current_time - 3 * 30 * 24 * 60 * 60:
+                        tmp = create_time_list.index(as_i)
+                        break
+                o_results = ascend_o_results[tmp::]
                 o_unique_id_list = [o_result.get(unique_id) for o_result in o_results]  # weibo 唯一标识列表
                 update_flag = 0
                 for union_result in union_results:
@@ -118,7 +130,7 @@ def filter_and_insert(after_collection, results, spider_id, order_id, unique_id)
                     after_collection.update({"_id": obj.get('_id')},
                                             {"$set": {"results": o_results, "updated_at": int(time.time())}})
             except Exception as e:
-                print(spider_id, unique_id)
+                print(spider_id, unique_id, obj.get('order_id'))
                 print(e)
         else:
             new_one = {
@@ -224,10 +236,10 @@ def clear_collection(collection):
 
 if __name__ == '__main__':
 
-    # 1993 1502
-    for i in range(3347, 3987):
-        print("剩余: {}".format(19931502 - (i - 1) * 5000))
-
+    # for i in range(3986, 3987):
+    #     print("剩余: {}".format(19931502 - (i - 1) * 5000))
+    for i in range(3996, 5917):
+        print("剩余: {}".format(29581502 - (i - 1) * 5000))
         start_time1 = time.time()
         # # 上10000个的最后一个
         if i == 1:
@@ -258,7 +270,7 @@ if __name__ == '__main__':
         sum = int(end_time - start_time1)
         speed = int(5000 / sum)
         print("速度: {} 个/s".format(speed))
-        print("还需要: {} s".format(int((19931502 - i * 5000) / speed)))
+        print("还需要: {} s".format(int((29581502 - i * 5000) / speed)))
         print("第 {} 次 循环结束".format(i))
         print("")
         print("")

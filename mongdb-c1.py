@@ -8,7 +8,7 @@ MONGODB_HOSTS = [
 ]
 
 client1 = pymongo.MongoClient("mongodb://root:B99m&l8LY^%hg3vefpO9p)4kyF!tsvPD@dds-bp19d0ea34ec38941316-pub.mongodb.rds.aliyuncs.com:3717/")
-client2 = pymongo.MongoClient(host='192.168.11.4', port=27017)
+client2 = pymongo.MongoClient(host="172.31.11.218", port=27017)
 
 db1 = client1.SpiderTasks
 

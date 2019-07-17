@@ -44,7 +44,7 @@ class MyThread(threading.Thread):
 #
 #     print('主线程结束执行')
 
-from rest_framework import exceptions
+# from rest_framework import exceptions
 
 
 def pt():
@@ -68,7 +68,10 @@ def pt():
 
 
 import json
+import os
 if __name__ == '__main__':
 
-    pt()
+    # pt()
+
+    print(os.getpid())
 
